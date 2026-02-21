@@ -152,6 +152,9 @@ function App() {
           )}
         </div>
       </div>
+      <p className="mt-8 text-sm text-gray-400 text-center">
+        Vibecoded by Crypto Bizzi.
+      </p>
     </div>
   )
 }
