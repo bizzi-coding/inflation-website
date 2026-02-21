@@ -1,5 +1,14 @@
 import { useState, useMemo } from 'react'
 import { Wallet, TrendingDown } from 'lucide-react'
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts'
 import inflationData from './data/inflation.json'
 
 const years = inflationData.map((d) => d.year)
@@ -11,6 +20,18 @@ function formatMoney(value) {
   if (value == null || Number.isNaN(value)) return '—'
   const rounded = Math.round(value)
   return rounded.toLocaleString('ru-RU') + ' ₽'
+}
+
+/** Генерирует данные для графика: реальная стоимость годовой ЗП по годам (накопленная инфляция). */
+function getChartData(annual, yearFrom, yearTo) {
+  const data = []
+  let factor = 1
+  for (let y = yearFrom; y <= yearTo; y++) {
+    data.push({ year: y, value: Math.round(annual / factor) })
+    const r = rateByYear[y]
+    if (r != null) factor *= 1 + r / 100
+  }
+  return data
 }
 
 function App() {
@@ -55,6 +76,11 @@ function App() {
     }
   }, [monthly, yearFrom, yearTo])
 
+  const chartData = useMemo(() => {
+    if (!result) return []
+    return getChartData(result.annual, result.yearFrom, result.yearTo)
+  }, [result])
+
   const selectClass =
     'rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-800 focus:border-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-200/80 transition appearance-none cursor-pointer w-full'
   const selectStyle = {
@@ -66,8 +92,9 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center p-4">
+      <div className="flex-1 w-full flex flex-col items-center justify-center">
+        <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-lg shadow-slate-200/60 border border-slate-100 p-6 sm:p-8">
           <div className="flex items-center gap-2 text-slate-700 mb-6">
             <Wallet className="w-6 h-6 text-slate-500" strokeWidth={1.8} />
@@ -148,11 +175,59 @@ function App() {
                 <span className="text-slate-600">Реальная покупательная способность</span>
                 <span className="font-medium text-slate-800">{formatMoney(result.real)}</span>
               </div>
+
+              <div className="mt-4 -mx-1 w-full" style={{ minHeight: 300 }}>
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="chartBurn" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#ef4444" stopOpacity={0.4} />
+                        <stop offset="100%" stopColor="#ef4444" stopOpacity={0.05} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                    <XAxis
+                      dataKey="year"
+                      tick={{ fontSize: 12, fill: '#64748b' }}
+                      axisLine={{ stroke: '#e2e8f0' }}
+                      tickLine={false}
+                    />
+                    <YAxis
+                      tickFormatter={(v) => (v >= 1e6 ? `${(v / 1e6).toFixed(1)} млн` : `${(v / 1e3).toFixed(0)} тыс`)}
+                      tick={{ fontSize: 11, fill: '#64748b' }}
+                      axisLine={false}
+                      tickLine={false}
+                      width={42}
+                    />
+                    <Tooltip
+                      content={({ active, payload }) =>
+                        active && payload?.[0] ? (
+                          <div className="bg-white border border-slate-200 rounded-lg shadow-lg px-3 py-2 text-sm">
+                            <span className="text-slate-500">{payload[0].payload.year}:</span>{' '}
+                            <span className="font-semibold text-slate-800">
+                              {formatMoney(payload[0].value)}
+                            </span>
+                          </div>
+                        ) : null
+                      }
+                      cursor={{ stroke: '#cbd5e1', strokeWidth: 1 }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#ef4444"
+                      strokeWidth={2}
+                      fill="url(#chartBurn)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           )}
         </div>
       </div>
-      <p className="mt-8 text-sm text-gray-400 text-center">
+      </div>
+      <p className="text-sm text-gray-400 text-center pt-6 pb-2">
         Vibecoded by Crypto Bizzi.
       </p>
     </div>
