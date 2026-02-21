@@ -97,9 +97,9 @@ function App() {
   }, [result])
 
   const selectClass =
-    'rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-800 focus:border-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-200/80 transition appearance-none cursor-pointer w-full'
+    'rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-slate-100 focus:border-slate-500 focus:ring-2 focus:ring-slate-600/50 focus:outline-none transition appearance-none cursor-pointer w-full'
   const selectStyle = {
-    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'right 0.75rem center',
     backgroundSize: '1.25rem',
@@ -107,20 +107,20 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center p-4">
+    <div className="min-h-screen bg-slate-950 flex flex-col items-center p-4">
       <div className="flex-1 w-full flex flex-col items-center justify-center">
         <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-lg shadow-slate-200/60 border border-slate-100 p-6 sm:p-8">
-          <div className="flex items-center gap-2 text-slate-700 mb-6">
-            <Wallet className="w-6 h-6 text-slate-500" strokeWidth={1.8} />
-            <h1 className="text-xl font-semibold tracking-tight">
+        <div className="bg-slate-900 rounded-2xl shadow-xl shadow-black/20 border border-slate-800 p-6 sm:p-8">
+          <div className="flex items-center gap-2 text-slate-200 mb-6">
+            <Wallet className="w-6 h-6 text-slate-400" strokeWidth={1.8} />
+            <h1 className="text-xl font-semibold tracking-tight text-white">
               Калькулятор инфляции ЗП
             </h1>
           </div>
 
           <div className="space-y-4">
             <label className="block">
-              <span className="text-sm font-medium text-slate-600">Зарплата в месяц</span>
+              <span className="text-sm font-medium text-slate-400">Зарплата в месяц</span>
               <input
                 type="number"
                 min="0"
@@ -128,13 +128,13 @@ function App() {
                 placeholder="100 000"
                 value={salary}
                 onChange={(e) => setSalary(e.target.value)}
-                className="mt-1.5 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-800 placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-200/80 transition"
+                className="mt-1.5 w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-slate-100 placeholder:text-slate-500 focus:border-slate-500 focus:ring-2 focus:ring-slate-600/50 focus:outline-none transition"
               />
             </label>
 
             <div className="grid grid-cols-2 gap-3">
               <label className="block">
-                <span className="text-sm font-medium text-slate-600">С какого года</span>
+                <span className="text-sm font-medium text-slate-400">С какого года</span>
                 <select
                   value={yearFrom}
                   onChange={(e) => handleYearFromChange(e.target.value)}
@@ -147,7 +147,7 @@ function App() {
                 </select>
               </label>
               <label className="block">
-                <span className="text-sm font-medium text-slate-600">По какой год</span>
+                <span className="text-sm font-medium text-slate-400">По какой год</span>
                 <select
                   value={yearTo}
                   onChange={(e) => handleYearToChange(e.target.value)}
@@ -163,32 +163,32 @@ function App() {
           </div>
 
           {result && (
-            <div className="mt-6 rounded-xl bg-slate-50 border border-slate-100 p-4 space-y-3">
+            <div className="mt-6 rounded-xl bg-slate-800/50 border border-slate-700 p-4 space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-600">Общая инфляция за период</span>
-                <span className="font-semibold text-slate-800">
+                <span className="text-slate-400">Общая инфляция за период</span>
+                <span className="font-semibold text-slate-100">
                   {result.totalInflationPercent.toFixed(1)}%
                 </span>
               </div>
               <p className="text-xs text-slate-500 -mt-1">
                 {result.yearFrom} — {result.yearTo}
               </p>
-              <div className="flex justify-between text-sm text-slate-600 pt-1 border-t border-slate-200">
+              <div className="flex justify-between text-sm text-slate-400 pt-1 border-t border-slate-700">
                 <span>Годовая зарплата</span>
-                <span className="font-medium text-slate-800">{formatMoney(result.annual)}</span>
+                <span className="font-medium text-slate-200">{formatMoney(result.annual)}</span>
               </div>
-              <div className="flex items-center gap-2 pt-2 border-t border-slate-200">
+              <div className="flex items-center gap-2 pt-2 border-t border-slate-700">
                 <TrendingDown className="w-4 h-4 text-red-500 shrink-0" strokeWidth={2} />
                 <div className="flex justify-between flex-1 items-baseline gap-2 min-w-0">
-                  <span className="text-sm font-medium text-slate-700">Потеря покупательной способности</span>
+                  <span className="text-sm font-medium text-slate-300">Потеря покупательной способности</span>
                   <span className="text-lg font-semibold text-red-500 tabular-nums shrink-0">
                     {formatMoney(result.loss)}
                   </span>
                 </div>
               </div>
               <div className="flex justify-between text-sm pt-1">
-                <span className="text-slate-600">Реальная покупательная способность</span>
-                <span className="font-medium text-slate-800">{formatMoney(result.real)}</span>
+                <span className="text-slate-400">Реальная покупательная способность</span>
+                <span className="font-medium text-slate-200">{formatMoney(result.real)}</span>
               </div>
 
               <div className="mt-4 -mx-1 w-full" style={{ minHeight: 300 }}>
@@ -200,16 +200,16 @@ function App() {
                         <stop offset="100%" stopColor="#ef4444" stopOpacity={0.05} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
                     <XAxis
                       dataKey="year"
-                      tick={{ fontSize: 12, fill: '#64748b' }}
-                      axisLine={{ stroke: '#e2e8f0' }}
+                      tick={{ fontSize: 12, fill: '#94a3b8' }}
+                      axisLine={{ stroke: '#475569' }}
                       tickLine={false}
                     />
                     <YAxis
                       tickFormatter={(v) => (v >= 1e6 ? `${(v / 1e6).toFixed(1)} млн` : `${(v / 1e3).toFixed(0)} тыс`)}
-                      tick={{ fontSize: 11, fill: '#64748b' }}
+                      tick={{ fontSize: 11, fill: '#94a3b8' }}
                       axisLine={false}
                       tickLine={false}
                       width={42}
@@ -217,15 +217,15 @@ function App() {
                     <Tooltip
                       content={({ active, payload }) =>
                         active && payload?.[0] ? (
-                          <div className="bg-white border border-slate-200 rounded-lg shadow-lg px-3 py-2 text-sm">
-                            <span className="text-slate-500">{payload[0].payload.year}:</span>{' '}
-                            <span className="font-semibold text-slate-800">
+                          <div className="bg-slate-800 border border-slate-600 rounded-lg shadow-xl px-3 py-2 text-sm">
+                            <span className="text-slate-400">{payload[0].payload.year}:</span>{' '}
+                            <span className="font-semibold text-slate-100">
                               {formatMoney(payload[0].value)}
                             </span>
                           </div>
                         ) : null
                       }
-                      cursor={{ stroke: '#cbd5e1', strokeWidth: 1 }}
+                      cursor={{ stroke: '#475569', strokeWidth: 1 }}
                     />
                     <Area
                       type="monotone"
@@ -252,7 +252,7 @@ function App() {
         </div>
       </div>
       </div>
-      <p className="text-sm text-gray-400 text-center pt-6 pb-2">
+      <p className="text-sm text-slate-500 text-center pt-6 pb-2">
         Vibecoded by Crypto Bizzi.
       </p>
     </div>
