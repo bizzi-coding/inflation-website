@@ -81,14 +81,20 @@ function App() {
     return getChartData(result.annual, result.yearFrom, result.yearTo)
   }, [result])
 
-  function shareToTelegram() {
-    if (!result) return
-    const text = `Шок! 😱 За период с ${result.yearFrom} по ${result.yearTo} инфляция сожрала ${result.totalInflationPercent.toFixed(1)}% моей зарплаты! Проверь свои потери на калькуляторе от Crypto Bizzi:`
-    const url = encodeURIComponent(window.location.href)
-    const encodedText = encodeURIComponent(text)
-    const telegramUrl = `https://t.me/share/url?url=${url}&text=${encodedText}`
-    window.open(telegramUrl, '_blank')
-  }
+  const telegramUrl = useMemo(() => {
+    if (!result) return ''
+    const times = Number((1 + result.totalInflationPercent / 100).toFixed(1))
+    const siteUrl = window.location.href
+    const message = [
+      '📉 Мои деньги просто сгорели...',
+      '',
+      'За период с ' + result.yearFrom + ' по ' + result.yearTo + ' накопленная инфляция составила ' + result.totalInflationPercent.toFixed(1) + '%.',
+      'Это значит, что моя зарплата обесценилась почти в ' + times + ' раза!',
+      '',
+      'Проверь свои потери тут: 🔍 ' + siteUrl,
+    ].join('\n')
+    return 'tg://msg_url?url=&text=' + encodeURIComponent(message)
+  }, [result])
 
   const selectClass =
     'rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-800 focus:border-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-200/80 transition appearance-none cursor-pointer w-full'
@@ -232,14 +238,15 @@ function App() {
                 </ResponsiveContainer>
               </div>
 
-              <button
-                type="button"
-                onClick={shareToTelegram}
-                className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl bg-[#0088cc] text-white py-3 px-4 font-medium hover:bg-[#006699] transition-colors"
+              <a
+                href={telegramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl bg-[#0088cc] text-white py-3 px-4 font-medium hover:bg-[#006699] transition-colors no-underline"
               >
                 <Send className="w-4 h-4" strokeWidth={2} />
                 Поделиться в Telegram
-              </button>
+              </a>
             </div>
           )}
         </div>
