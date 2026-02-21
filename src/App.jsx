@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { useSpring, useMotionValueEvent, motion } from 'framer-motion'
 import { Wallet, TrendingDown, Send } from 'lucide-react'
 import {
   AreaChart,
@@ -10,6 +11,28 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import inflationData from './data/inflation.json'
+
+/** Анимированное число: набегает от 0 до value при изменении. */
+function AnimatedNumber({ value, decimals = 0, suffix = '' }) {
+  const spring = useSpring(0, { stiffness: 80, damping: 28 })
+  const [display, setDisplay] = useState(0)
+  useEffect(() => {
+    spring.set(Number(value))
+  }, [value, spring])
+  useMotionValueEvent(spring, 'change', (v) => setDisplay(v))
+  const raw = decimals >= 1 ? Number(display.toFixed(decimals)) : Math.round(display)
+  const text = decimals >= 1
+    ? raw.toLocaleString('ru-RU', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + suffix
+    : raw.toLocaleString('ru-RU') + suffix
+  return <span>{text}</span>
+}
+
+function getEasterEggMessage(percent) {
+  if (percent > 100) return 'Ого! Ты официально оплатил подписку на выживание в этой экономике 🤡'
+  if (percent >= 50) return 'Твои деньги тают быстрее, чем мороженое в июле 🍦'
+  if (percent >= 20) return 'Жить стало лучше, жить стало веселее (но дороже) 💸'
+  return 'Пока держимся, но расслабляться рано! 🎢'
+}
 
 const years = inflationData.map((d) => d.year)
 const yearMin = Math.min(...years)
@@ -166,8 +189,8 @@ function App() {
             <div className="mt-6 rounded-xl bg-slate-800/50 border border-slate-700 p-4 space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Общая инфляция за период</span>
-                <span className="font-semibold text-slate-100">
-                  {result.totalInflationPercent.toFixed(1)}%
+                <span className="font-semibold text-slate-100 tabular-nums">
+                  <AnimatedNumber value={result.totalInflationPercent} decimals={1} suffix="%" />
                 </span>
               </div>
               <p className="text-xs text-slate-500 -mt-1">
@@ -175,20 +198,24 @@ function App() {
               </p>
               <div className="flex justify-between text-sm text-slate-400 pt-1 border-t border-slate-700">
                 <span>Годовая зарплата</span>
-                <span className="font-medium text-slate-200">{formatMoney(result.annual)}</span>
+                <span className="font-medium text-slate-200 tabular-nums">
+                  <AnimatedNumber value={result.annual} suffix=" ₽" />
+                </span>
               </div>
               <div className="flex items-center gap-2 pt-2 border-t border-slate-700">
                 <TrendingDown className="w-4 h-4 text-red-500 shrink-0" strokeWidth={2} />
                 <div className="flex justify-between flex-1 items-baseline gap-2 min-w-0">
                   <span className="text-sm font-medium text-slate-300">Потеря покупательной способности</span>
                   <span className="text-lg font-semibold text-red-500 tabular-nums shrink-0">
-                    {formatMoney(result.loss)}
+                    <AnimatedNumber value={result.loss} suffix=" ₽" />
                   </span>
                 </div>
               </div>
               <div className="flex justify-between text-sm pt-1">
                 <span className="text-slate-400">Реальная покупательная способность</span>
-                <span className="font-medium text-slate-200">{formatMoney(result.real)}</span>
+                <span className="font-medium text-slate-200 tabular-nums">
+                  <AnimatedNumber value={result.real} suffix=" ₽" />
+                </span>
               </div>
 
               <div className="mt-4 -mx-1 w-full" style={{ minHeight: 300 }}>
@@ -237,6 +264,15 @@ function App() {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
+
+              <motion.p
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
+                className="mt-4 rounded-xl bg-slate-800/60 border border-slate-700/80 px-4 py-3 text-sm text-slate-300"
+              >
+                {getEasterEggMessage(result.totalInflationPercent)}
+              </motion.p>
 
               <a
                 href={telegramUrl}
