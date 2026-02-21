@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Wallet, TrendingDown } from 'lucide-react'
+import { Wallet, TrendingDown, Send } from 'lucide-react'
 import {
   AreaChart,
   Area,
@@ -80,6 +80,15 @@ function App() {
     if (!result) return []
     return getChartData(result.annual, result.yearFrom, result.yearTo)
   }, [result])
+
+  function shareToTelegram() {
+    if (!result) return
+    const text = `Шок! 😱 За период с ${result.yearFrom} по ${result.yearTo} инфляция сожрала ${result.totalInflationPercent.toFixed(1)}% моей зарплаты! Проверь свои потери на калькуляторе от Crypto Bizzi:`
+    const url = encodeURIComponent(window.location.href)
+    const encodedText = encodeURIComponent(text)
+    const telegramUrl = `https://t.me/share/url?url=${url}&text=${encodedText}`
+    window.open(telegramUrl, '_blank')
+  }
 
   const selectClass =
     'rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-800 focus:border-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-200/80 transition appearance-none cursor-pointer w-full'
@@ -222,6 +231,15 @@ function App() {
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
+
+              <button
+                type="button"
+                onClick={shareToTelegram}
+                className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl bg-[#0088cc] text-white py-3 px-4 font-medium hover:bg-[#006699] transition-colors"
+              >
+                <Send className="w-4 h-4" strokeWidth={2} />
+                Поделиться в Telegram
+              </button>
             </div>
           )}
         </div>
